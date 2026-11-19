@@ -1,0 +1,27 @@
+# Planet FreeBSD: site settings and the feed list.
+# Add a feed with a [[feed]] block and send it for review.
+
+[site]
+title = "Planet FreeBSD"
+url = "https://planet.freebsd.org"
+description = "What the FreeBSD community is writing"
+# max_posts = 60            # posts on the page and in the combined feed
+# max_posts_per_feed = 5    # so one busy feed cannot fill the page
+# max_age_days = 365        # older posts are left out
+# excerpt_chars = 500       # plain-text excerpt length
+# mute_after_failures = 5   # consecutive failed runs before a feed is hidden
+
+[[feed]]
+name = "FreeBSD Foundation"
+url = "https://freebsdfoundation.org/feed/"
+site = "https://freebsdfoundation.org"
+
+[[feed]]
+name = "FreeBSD News Flash"
+url = "https://www.freebsd.org/news/feed.xml"
+site = "https://www.freebsd.org/news/newsflash/"
+
+[[feed]]
+name = "FreeBSD Security Advisories"
+url = "https://www.freebsd.org/security/feed.xml"
+site = "https://www.freebsd.org/security/"

@@ -1,0 +1,48 @@
+[package]
+name = "planet-freebsd"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.99.1"
+description = "Static feed aggregator behind planet.freebsd.org"
+license = "BSD-2-Clause"
+publish = false
+
+[[bin]]
+name = "planet"
+path = "src/main.rs"
+
+[dependencies]
+ammonia = "4.2.5"
+anyhow = "1.0.104"
+askama = "0.16.1"
+chrono-machines = { version = "0.11", features = ["async"] }
+jiff = { version = "0.2", features = ["serde"] }
+# rustls on ring: aws-lc-sys does not build on FreeBSD. `rss` is rama's own
+# RSS 2.0 / Atom 1.0 reader and writer, so no separate feed parser.
+rama = { version = "0.4.0", features = ["http-backend", "dns", "tcp", "rustls", "ring", "rss"] }
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.154"
+thiserror = "2"
+tokio = { version = "1", features = ["rt", "macros", "time"] }
+toml = "1.2.1"
+usage-rs = "7.4.0"
+
+[dev-dependencies]
+tempfile = "3.27.0"
+usage-parser = { version = "7.4.0", package = "usage-lib" }
+usage-rs = { version = "7.4.0", features = ["test"] }
+
+[lints.rust]
+unsafe_code = "deny"
+unused_must_use = "warn"
+dead_code_pub_in_binary = "warn"
+
+[lints.clippy]
+all = "warn"
+pedantic = "warn"
+nursery = "warn"
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true

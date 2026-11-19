@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="layout">
+<main>
+{% if days.is_empty() %}<p>No posts yet.</p>{% endif %}
+{% for day in days %}
+<h2 class="day">{{ day.date }}</h2>
+{% for p in day.posts %}
+<article>
+<h3><a href="{{ p.post.link }}" rel="noopener">{{ p.post.title_html|safe }}</a></h3>
+<p class="meta">{% if let Some(author) = p.post.author %}{{ author }} · {% endif %}<a href="{{ p.source.home() }}" rel="noopener">{{ p.source.name }}</a> · {{ p.time }}</p>
+{% if !p.post.excerpt_html.is_empty() %}<p class="excerpt">{{ p.post.excerpt_html|safe }}</p>{% endif %}
+</article>
+{% endfor %}
+{% endfor %}
+</main>
+<aside>
+<h2>Subscriptions</h2>
+<ul>
+{% for feed in feeds %}
+<li><a href="{{ feed.home() }}" rel="noopener">{{ feed.name }}</a></li>
+{% endfor %}
+</ul>
+</aside>
+</div>
+{% endblock %}

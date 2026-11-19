@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>{% block title %}{{ site.title }}{% endblock %}</title>
+<link rel="alternate" type="application/atom+xml" title="{{ site.title }}" href="atom.xml">
+<style>
+:root { color-scheme: light dark; --fg: #1c1c1c; --muted: #666; --bg: #fff; --rule: #ddd; --accent: #ab2b28; }
+@media (prefers-color-scheme: dark) { :root { --fg: #e6e6e6; --muted: #999; --bg: #161616; --rule: #333; --accent: #e5564f; } }
+* { box-sizing: border-box; }
+body { margin: 0 auto; max-width: 62rem; padding: 0 1rem 3rem; background: var(--bg); color: var(--fg); font: 1rem/1.55 system-ui, sans-serif; }
+a { color: var(--accent); }
+header { padding: 1.5rem 0 1rem; border-bottom: 3px solid var(--accent); }
+header h1 { margin: 0; font-size: 1.8rem; }
+header h1 a { color: inherit; text-decoration: none; }
+header p { margin: .2rem 0 0; color: var(--muted); }
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) 15rem; gap: 2.5rem; }
+@media (max-width: 48rem) { .layout { grid-template-columns: minmax(0, 1fr); } }
+h2.day { margin: 2rem 0 .5rem; font-size: .85rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+article { padding: .9rem 0; border-top: 1px solid var(--rule); }
+article h3 { margin: 0; font-size: 1.15rem; }
+article h3 a { text-decoration: none; }
+article h3 a:hover { text-decoration: underline; }
+.meta { margin: .15rem 0 .4rem; font-size: .85rem; color: var(--muted); }
+article p.excerpt { margin: 0; overflow-wrap: anywhere; }
+aside h2 { margin: 2rem 0 .5rem; font-size: 1rem; }
+aside ul { margin: 0; padding: 0; list-style: none; font-size: .9rem; }
+aside li { padding: .15rem 0; }
+table { width: 100%; margin-top: 1.5rem; border-collapse: collapse; font-size: .9rem; }
+th, td { padding: .4rem .6rem; border-bottom: 1px solid var(--rule); text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+.health-ok { color: #2e7d32; } .health-failing { color: #c77700; } .health-muted { color: var(--accent); font-weight: 600; } .health-pending { color: var(--muted); }
+footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--rule); font-size: .85rem; color: var(--muted); }
+</style>
+</head>
+<body>
+<header>
+<h1><a href="./">{{ site.title }}</a></h1>
+{% if !site.description.is_empty() %}<p>{{ site.description }}</p>{% endif %}
+</header>
+{% block content %}{% endblock %}
+<footer>
+Generated {{ generated }}.
+<a href="atom.xml">Atom feed</a> · <a href="opml.xml">OPML</a> · <a href="status.html">Feed status</a>.
+Posts belong to their authors; follow the links to read them in full.
+</footer>
+</body>
+</html>

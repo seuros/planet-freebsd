@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Feed status · {{ site.title }}{% endblock %}
+{% block content %}
+<main>
+<table>
+<thead><tr><th>Feed</th><th>Health</th><th>Last success</th><th>Posts</th><th>Last error</th></tr></thead>
+<tbody>
+{% for row in rows %}
+<tr>
+<td><a href="{{ row.source.url }}" rel="noopener">{{ row.source.name }}</a></td>
+<td class="health-{{ row.health }}">{{ row.health }}{% if row.failures > 0 %} ({{ row.failures }}×){% endif %}</td>
+<td>{{ row.last_success }}</td>
+<td>{{ row.posts }}</td>
+<td>{{ row.last_error }}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</main>
+{% endblock %}
