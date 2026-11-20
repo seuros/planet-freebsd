@@ -2,7 +2,7 @@
 name = "planet-freebsd"
 version = "0.1.0"
 edition = "2024"
-rust-version = "1.99.1"
+rust-version = "1.99.0"
 description = "Static feed aggregator behind planet.freebsd.org"
 license = "BSD-2-Clause"
 publish = false
