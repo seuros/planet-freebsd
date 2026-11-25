@@ -83,3 +83,10 @@ name = "MidnightBSD Developer Blog"
 tags = ["midnightbsd", "org"]
 url = "https://www.justjournal.com/users/mbsd/rss"
 site = "https://www.justjournal.com/users/mbsd/"
+
+[[feed]]
+name = "Yohwllo's Blog"
+tags = ["freebsd", "personal"]
+filter = ["freebsd", "drm-kmod"]
+url = "https://racha.ca/feed.php"
+site = "https://racha.ca/"

@@ -121,7 +121,7 @@ struct IndexPage<'a> {
     site: &'a Site,
     generated: String,
     days: Vec<Day<'a>>,
-    feeds: &'a [FeedSource],
+    feeds: &'a [&'a FeedSource],
 }
 
 struct FeedRow<'a> {
@@ -155,7 +155,7 @@ struct StatusPage<'a> {
 #[template(path = "opml.xml")]
 struct Opml<'a> {
     site: &'a Site,
-    feeds: &'a [FeedSource],
+    feeds: &'a [&'a FeedSource],
 }
 
 fn minute(at: Timestamp) -> String {
@@ -181,15 +181,15 @@ fn days<'a>(entries: &[Entry<'a>]) -> Vec<Day<'a>> {
     days
 }
 
-fn rows<'a>(config: &'a Config, state: &'a State) -> Vec<FeedRow<'a>> {
-    config
-        .feeds
+fn rows<'a>(site: &Site, feeds: &[&'a FeedSource], state: &'a State) -> Vec<FeedRow<'a>> {
+    feeds
         .iter()
+        .copied()
         .map(|source| {
             let feed = state.feed(source);
             let health = match feed {
                 None => "pending",
-                Some(feed) if config.site.mutes(feed) => "muted",
+                Some(feed) if site.mutes(feed) => "muted",
                 Some(feed) if feed.failures > 0 => "failing",
                 Some(_) => "ok",
             };
@@ -302,6 +302,11 @@ pub async fn render(
     now: Timestamp,
 ) -> anyhow::Result<usize> {
     let site = &config.site;
+    let mut feeds: Vec<_> = config.feeds.iter().collect();
+    feeds.sort_by_cached_key(|feed| {
+        let is_org = feed.tags.iter().any(|tag| tag.eq_ignore_ascii_case("org"));
+        (!is_org, feed.name.trim().to_lowercase())
+    });
     let generated = minute(now);
     write_atomic(&out.join("atom.css"), include_bytes!("../templates/atom.css"))?;
     let mut count = 0;
@@ -318,7 +323,7 @@ pub async fn render(
             site,
             generated: generated.clone(),
             days: days(&entries),
-            feeds: &config.feeds,
+            feeds: &feeds,
         };
         write_page(&dir, "index.html", &index)?;
         let mut feed = atom(site, &entries, now, topic).await.context("rendering atom.xml")?;
@@ -343,8 +348,8 @@ pub async fn render(
             generated: &generated,
         },
     )?;
-    let status = StatusPage { root: "", site, generated, rows: rows(config, state) };
-    let opml = Opml { site, feeds: &config.feeds };
+    let status = StatusPage { root: "", site, generated, rows: rows(site, &feeds, state) };
+    let opml = Opml { site, feeds: &feeds };
 
     write_page(out, "status.html", &status)?;
     write_page(out, "opml.xml", &opml)?;
