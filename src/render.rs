@@ -21,8 +21,16 @@ pub struct Entry<'a> {
     pub source: &'a FeedSource,
 }
 
-const DISTROS: &[&str] =
-    &["dragonflybsd", "freebsd", "ghostbsd", "hardenedbsd", "midnightbsd", "netbsd", "openbsd"];
+const DISTROS: &[&str] = &[
+    "dragonflybsd",
+    "freebsd",
+    "ghostbsd",
+    "hardenedbsd",
+    "midnightbsd",
+    "netbsd",
+    "nextbsd",
+    "openbsd",
+];
 
 fn distro(tag: &str) -> Option<&'static str> {
     let tag = tag.trim();

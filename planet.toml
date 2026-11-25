@@ -102,3 +102,9 @@ name = "Adrian Chadd"
 tags = ["freebsd", "personal"]
 url = "https://adrianchadd.blogspot.com/feeds/posts/default?q=freebsd"
 site = "https://adrianchadd.blogspot.com/"
+
+[[feed]]
+name = "NextBSD Releases"
+tags = ["nextbsd", "org"]
+url = "https://github.com/nextbsd/nextbsd/releases.atom"
+site = "https://github.com/nextbsd/nextbsd/releases"
