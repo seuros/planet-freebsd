@@ -2,15 +2,21 @@
 {% block title %}Subscribe · {{ site.title }}{% endblock %}
 {% block content %}
 <main>
-<h2>Follow everything</h2>
-<p>In your feed reader, choose “Add feed” and paste this address. One subscription follows the whole planet, including new sources as we add them.</p>
-<p><code>{{ home }}/atom.xml</code> · <a href="atom.xml">Preview the feed</a></p>
+<div class="subscribe-options">
+<section>
+<h2><a href="atom.xml">Follow {{ site.title }} (Atom)</a></h2>
+<p>Get one feed of curated BSD posts, including posts from new sources as we add them. In your reader, choose “Add feed” and paste this address:</p>
+<p><code>{{ home }}/atom.xml</code></p>
+</section>
+<section>
+<h2><a href="opml.xml" download>Download the source list (OPML)</a></h2>
+<p>Import the downloaded file into your reader to follow each source separately. You’ll get their full feeds, including posts {{ site.title }} filters out. Sources added later won’t be included automatically.</p>
+</section>
+</div>
 <h2>Follow one BSD</h2>
 <p>Copy the address for the project you want. A post about two projects can appear in both feeds.</p>
 <ul>{% for (tag, _) in crate::render::DISTROS %}
 <li><a href="tags/{{ tag }}/atom.xml" class="tag" data-tag="{{ tag }}">+{{ tag }}</a> <code>{{ home }}/tags/{{ tag }}/atom.xml</code></li>
 {% endfor %}</ul>
-<h2>Follow the blogs directly</h2>
-<p><a href="opml.xml" download>Download the subscription list (OPML)</a>, then use your reader’s import option. This adds each original feed separately. The planet’s filters no longer apply: for example, you’ll get non-BSD posts from Seuros Blog too.</p>
 </main>
 {% endblock %}
