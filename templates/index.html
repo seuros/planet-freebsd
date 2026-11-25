@@ -9,16 +9,24 @@
 <h2 class="day">{{ day.date }}</h2>
 {% for p in day.posts %}
 <article>
-<h3><a href="{{ p.post.link }}" rel="noopener" data-tag="{{ p.topics|join(" ") }}">{{ p.post.title_html|safe }}</a></h3>
-<p class="meta">{% if let Some(author) = p.post.display_author() %}{{ author }} · {% endif %}<a href="{{ p.source.home() }}" rel="noopener">{{ p.source.name }}</a> {% for tag in p.source.tags %}{% if crate::render::distro(tag).is_none() %}{% include "tag.html" %}{% endif %}{% endfor %} · {{ p.time }} {% for tag in p.topics %}{% include "topic.html" %}{% endfor %}</p>
+<h3><a href="{{ p.post.link }}" rel="noopener">{{ p.post.title_html|safe }}</a></h3>
+<p class="meta">
+  <a href="{{ p.source.home() }}" rel="noopener">{{ p.source.name }}</a>
+  {% if let Some(author) = p.post.display_author() %}{% if !author.eq_ignore_ascii_case(p.source.name.trim()) %} · {{ author }}{% endif %}{% endif %}
+  · {{ p.time }}
+</p>
 {% if !p.post.excerpt_html.is_empty() %}<p class="excerpt">{{ p.post.excerpt_html|safe }}</p>{% endif %}
 {% if let Some(date) = p.revised %}<p class="meta">Updated {{ date }}</p>{% endif %}
+<div class="labels">
+  {% for tag in p.topics %}{% include "topic.html" %}{% endfor %}
+  {% for tag in p.source.tags %}{% if crate::render::distro(tag).is_none() %}{% include "tag.html" %}{% endif %}{% endfor %}
+</div>
 </article>
 {% endfor %}
 {% endfor %}
 </main>
 <aside>
-<h2>Subscriptions</h2>
+<h2>Sources</h2>
 <ul>
 {% for feed in feeds %}
 <li><a href="{{ feed.home() }}" rel="noopener">{{ feed.name }}</a> {% for label in feed.tags %}{% if let Some(tag) = crate::render::distro(label) %}{% include "topic.html" %}{% else %}{% let tag = label %}{% include "tag.html" %}{% endif %}{% endfor %}</li>

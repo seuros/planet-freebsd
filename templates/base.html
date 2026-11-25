@@ -19,16 +19,17 @@ header h1 a { color: inherit; text-decoration: none; }
 header p { margin: .2rem 0 0; color: var(--muted); }
 .layout { display: grid; grid-template-columns: minmax(0, 1fr) 15rem; gap: 2.5rem; }
 @media (max-width: 48rem) { .layout { grid-template-columns: minmax(0, 1fr); } }
-h2.day { margin: 2rem 0 .5rem; font-size: .85rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+h2.day { margin: 2.5rem 0 .5rem; font-size: .85rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 article { padding: .9rem 0; border-top: 1px solid var(--rule); }
-article h3 { margin: 0; font-size: 1.15rem; }
-article h3 a { color: var(--distro, var(--fg)); text-decoration: none; }
-@media (prefers-color-scheme: dark) {
-  article h3 a { color: color-mix(in srgb, var(--distro, var(--fg)) 45%, white); }
-}
-article h3 a:hover { text-decoration: underline; }
+article h3 { margin: 0; font-size: 1.25rem; line-height: 1.35; overflow-wrap: anywhere; }
+article h3 a { color: inherit; text-decoration: none; }
+article h3 a:is(:hover, :focus-visible) { text-decoration: underline; }
 .meta { margin: .15rem 0 .4rem; font-size: .85rem; color: var(--muted); }
-.tag { display: inline-block; margin-inline-end: .2rem; padding: 0 .45em; border-radius: .4em; font-size: .8rem; color: white; background: var(--distro, #515763); }
+.meta a { color: inherit; }
+.labels { display: flex; flex-wrap: wrap; align-items: baseline; gap: .2rem .5rem; }
+.labels > * { margin-top: .4rem; }
+.tag { display: inline-block; font-size: .8rem; color: var(--muted); }
+a.tag { padding: 0 .45em; border-radius: .4em; color: white; background: var(--distro, #515763); }
 [data-tag~="freebsd"] { --distro: #963632; }
 [data-tag~="openbsd"] { --distro: #795600; }
 [data-tag~="dragonflybsd"] { --distro: #285d88; }
