@@ -91,6 +91,7 @@ fn required_categories_match_post_tags_before_the_feed_cap() {
     posts[1].categories = vec!["not-bsd".into()];
     posts[2].categories = vec!["BSD".into()];
     assert_eq!(selected(&config, &state), ["q1", "b3"]);
+    assert_eq!(rows(&config.site, &[&config.feeds[0]], &state)[0].posts, 1);
 }
 
 #[test]

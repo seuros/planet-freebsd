@@ -44,6 +44,15 @@ impl Site {
 }
 
 impl FeedSource {
+    fn matches_categories(&self, post: &Post) -> bool {
+        self.require_categories.is_empty()
+            || post.categories.iter().any(|category| {
+                self.require_categories
+                    .iter()
+                    .any(|tag| category.trim().eq_ignore_ascii_case(tag.trim()))
+            })
+    }
+
     fn home(&self) -> &str {
         self.site.as_deref().unwrap_or(&self.url)
     }
@@ -88,15 +97,7 @@ fn select<'a>(
             .iter()
             .filter(|post| post.display_date() >= cutoff)
             .filter(|post| topic.is_none_or(|tag| topics(source, post).any(|t| t == tag)))
-            .filter(|post| {
-                source.require_categories.is_empty()
-                    || post.categories.iter().any(|category| {
-                        source
-                            .require_categories
-                            .iter()
-                            .any(|tag| category.trim().eq_ignore_ascii_case(tag.trim()))
-                    })
-            })
+            .filter(|post| source.matches_categories(post))
             .collect();
         posts.sort_by_key(|post| post.rank());
         entries.extend(
@@ -217,7 +218,9 @@ fn rows<'a>(site: &Site, feeds: &[&'a FeedSource], state: &'a State) -> Vec<Feed
                     .and_then(|feed| feed.last_success)
                     .map_or_else(|| "never".to_string(), minute),
                 last_error: feed.and_then(|feed| feed.last_error.as_deref()).unwrap_or_default(),
-                posts: feed.map_or(0, |feed| feed.posts.len()),
+                posts: feed.map_or(0, |feed| {
+                    feed.posts.iter().filter(|post| source.matches_categories(post)).count()
+                }),
             }
         })
         .collect()
