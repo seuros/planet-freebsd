@@ -1,8 +1,12 @@
-# planet-freebsd
+# Planet BSD
 
-Static feed aggregator for planet.freebsd.org: one binary polls the feeds listed
+Planet BSD collects news and writing from across the BSDs. One binary polls the feeds listed
 in `planet.toml` and writes a site any web server can host. No database, no
 daemon, no JavaScript.
+
+[bsdfeed.seuros.net](https://bsdfeed.seuros.net/) is the temporary home of this
+independent proof of concept. After the proof of concept, the plan is to transfer
+the repository and the production feed to the FreeBSD Foundation.
 
 ```sh
 cargo build --release

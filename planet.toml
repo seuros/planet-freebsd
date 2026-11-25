@@ -1,10 +1,10 @@
-# Planet FreeBSD: site settings and the feed list.
+# Planet BSD: site settings and the feed list.
 # Add a feed with a [[feed]] block and send it for review.
 
 [site]
-title = "Planet FreeBSD"
+title = "Planet BSD"
 url = "https://bsdfeed.seuros.net"
-description = "News and writing from across the BSDs"
+description = "News and writing from across the BSDs. This independent proof of concept is hosted temporarily at bsdfeed.seuros.net. After the trial, we plan to transfer the repository and the production feed to the FreeBSD Foundation."
 # max_posts = 60            # posts on the page and in the combined feed
 # max_posts_per_feed = 5    # so one busy feed cannot fill the page
 # max_age_days = 365        # older posts are left out
@@ -44,7 +44,7 @@ site = "https://www.seuros.com/blog/"
 
 [[feed]]
 name = "DragonFly BSD Digest"
-tags = ["dragonflybsd"]
+tags = ["dragonflybsd", "org"]
 url = "https://www.dragonflydigest.com/feed/"
 site = "https://www.dragonflydigest.com/"
 
@@ -96,3 +96,9 @@ name = "Random Musings"
 tags = ["freebsd", "personal"]
 url = "https://people.freebsd.org/~dch/rss.xml"
 site = "https://people.freebsd.org/~dch/"
+
+[[feed]]
+name = "Adrian Chadd"
+tags = ["freebsd", "personal"]
+url = "https://adrianchadd.blogspot.com/feeds/posts/default?q=freebsd"
+site = "https://adrianchadd.blogspot.com/"
