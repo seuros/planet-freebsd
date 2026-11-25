@@ -1,0 +1,15 @@
+project = "planet-freebsd"
+version = "v0.1.0"
+
+[[targets]]
+name = "production"
+
+[targets.cloudflare]
+worker = "bsdfeed"
+config = "worker/wrangler.json"
+verify_url = "https://bsdfeed.seuros.net/"
+build = "cargo run --release --locked -- build"
+
+[[targets.health.probes]]
+url = "https://bsdfeed.seuros.net/atom.xml"
+status = 200

@@ -3,7 +3,7 @@
 
 [site]
 title = "Planet FreeBSD"
-url = "https://planet.freebsd.org"
+url = "https://bsdfeed.seuros.net"
 description = "News and writing from across the BSDs"
 # max_posts = 60            # posts on the page and in the combined feed
 # max_posts_per_feed = 5    # so one busy feed cannot fill the page
@@ -90,3 +90,9 @@ tags = ["freebsd", "personal"]
 filter = ["freebsd", "drm-kmod"]
 url = "https://racha.ca/feed.php"
 site = "https://racha.ca/"
+
+[[feed]]
+name = "Random Musings"
+tags = ["freebsd", "personal"]
+url = "https://people.freebsd.org/~dch/rss.xml"
+site = "https://people.freebsd.org/~dch/"
