@@ -141,6 +141,19 @@ async fn render_writes_every_file_escaped() {
 
     let atom = read("atom.xml");
     let subscribe = read("subscribe.html");
+    let nav = index
+        .split_once("<nav aria-label=\"Browse by BSD\">")
+        .unwrap()
+        .1
+        .split_once("</nav>")
+        .unwrap()
+        .0;
+    for &(tag, color) in DISTROS {
+        assert!(nav.contains(&format!("href=\"tags/{tag}/index.html\"")));
+        assert!(index.contains(&format!("[data-tag~=\"{tag}\"] {{ --distro: {color}; }}")));
+        assert!(subscribe.contains(&format!("tags/{tag}/atom.xml")));
+        assert!(out.path().join(format!("tags/{tag}/atom.xml")).is_file());
+    }
     assert!(subscribe.contains("https://planet.example/tags/openbsd/atom.xml"));
     assert!(read("tags/openbsd/index.html").contains("href=\"../../subscribe.html\""));
     assert!(!index.contains("undefined") && !atom.contains("undefined"));

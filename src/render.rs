@@ -21,15 +21,16 @@ pub struct Entry<'a> {
     pub source: &'a FeedSource,
 }
 
-const DISTROS: &[&str] = &[
-    "dragonflybsd",
-    "freebsd",
-    "ghostbsd",
-    "hardenedbsd",
-    "midnightbsd",
-    "netbsd",
-    "nextbsd",
-    "openbsd",
+// Canonical topic slugs and badge colors, in navigation order.
+const DISTROS: &[(&str, &str)] = &[
+    ("dragonflybsd", "#285d88"),
+    ("freebsd", "#963632"),
+    ("ghostbsd", "#17676b"),
+    ("hardenedbsd", "#315940"),
+    ("midnightbsd", "#593d80"),
+    ("netbsd", "#99430f"),
+    ("nextbsd", "#344761"),
+    ("openbsd", "#795600"),
 ];
 
 fn distro(tag: &str) -> Option<&'static str> {
@@ -37,7 +38,7 @@ fn distro(tag: &str) -> Option<&'static str> {
     if tag.eq_ignore_ascii_case("dragonfly-bsd") {
         return Some("dragonflybsd");
     }
-    DISTROS.iter().copied().find(|name| name.eq_ignore_ascii_case(tag))
+    DISTROS.iter().map(|&(name, _)| name).find(|name| name.eq_ignore_ascii_case(tag))
 }
 
 fn topics<'a>(source: &'a FeedSource, post: &'a Post) -> impl Iterator<Item = &'static str> + 'a {
@@ -340,7 +341,7 @@ pub async fn render(
     write_atomic(&out.join("atom.css"), include_bytes!("../templates/atom.css"))?;
     write_atomic(&out.join("planet.svg"), include_bytes!("../templates/planet.svg"))?;
     let mut count = 0;
-    for topic in std::iter::once(None).chain(DISTROS.iter().copied().map(Some)) {
+    for topic in std::iter::once(None).chain(DISTROS.iter().map(|&(tag, _)| Some(tag))) {
         let entries = select(config, state, now, topic);
         let dir = topic.map_or_else(|| out.to_owned(), |tag| out.join("tags").join(tag));
         let root = if topic.is_some() { "../../" } else { "" };

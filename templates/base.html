@@ -32,14 +32,9 @@ article h3 a:is(:hover, :focus-visible) { text-decoration: underline; }
 .labels > * { margin-top: .4rem; }
 .tag { display: inline-block; font-size: .8rem; color: var(--muted); }
 a.tag { padding: 0 .45em; border-radius: .4em; color: white; background: var(--distro, #515763); }
-[data-tag~="freebsd"] { --distro: #963632; }
-[data-tag~="openbsd"] { --distro: #795600; }
-[data-tag~="dragonflybsd"] { --distro: #285d88; }
-[data-tag~="hardenedbsd"] { --distro: #315940; }
-[data-tag~="netbsd"] { --distro: #99430f; }
-[data-tag~="nextbsd"] { --distro: #344761; }
-[data-tag~="ghostbsd"] { --distro: #17676b; }
-[data-tag~="midnightbsd"] { --distro: #593d80; }
+{% for (tag, color) in crate::render::DISTROS %}
+[data-tag~="{{ tag }}"] { --distro: {{ color }}; }
+{% endfor %}
 article p.excerpt { margin: 0; overflow-wrap: anywhere; }
 aside h2 { margin: 2rem 0 .5rem; font-size: 1rem; }
 aside ul { margin: 0; padding: 0; list-style: none; font-size: .9rem; }
@@ -54,7 +49,7 @@ footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--rule);
 <header>
 <h1><a href="{{ root }}index.html"><img src="{{ root }}planet.svg" alt="" width="36" height="36">{{ site.title }}</a></h1>
 {% if !site.description.is_empty() %}<p>{{ site.description }}</p>{% endif %}
-<nav aria-label="Browse by BSD">{% for tag in crate::render::DISTROS %}{% include "topic.html" %} {% endfor %}</nav>
+<nav aria-label="Browse by BSD">{% for (tag, _) in crate::render::DISTROS %}{% include "topic.html" %} {% endfor %}</nav>
 <a href="{{ root }}subscribe.html">Subscribe</a>
 </header>
 {% block content %}{% endblock %}
