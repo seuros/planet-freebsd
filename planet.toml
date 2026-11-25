@@ -122,3 +122,9 @@ tags = ["freebsd", "personal"]
 filter = ["freebsd"]
 url = "https://minsoo.io/feed"
 site = "https://minsoo.io/"
+
+[[feed]]
+name = "HyprBSD Blog"
+tags = ["hyprbsd", "org"]
+url = "https://hyprbsd.org/blog/index.xml"
+site = "https://hyprbsd.org/blog/"
