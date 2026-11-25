@@ -14,9 +14,9 @@
 </section>
 </div>
 <h2>Follow one BSD</h2>
-<p>Copy the address for the project you want. A post about two projects can appear in both feeds.</p>
+<p>Choose “Read posts” for clickable headlines and excerpts, or copy the Atom link into your feed reader.</p>
 <ul>{% for (tag, _) in crate::render::DISTROS %}
-<li><a href="tags/{{ tag }}/atom.xml" class="tag" data-tag="{{ tag }}">+{{ tag }}</a> <code>{{ home }}/tags/{{ tag }}/atom.xml</code></li>
+<li><a href="tags/{{ tag }}/index.html" class="tag" data-tag="{{ tag }}">+{{ tag }}</a> · <a href="tags/{{ tag }}/index.html" aria-label="Read {{ tag }} posts">Read posts</a> · <a href="{{ home }}/tags/{{ tag }}/atom.xml" aria-label="Subscribe to {{ tag }} via Atom">Subscribe via Atom</a></li>
 {% endfor %}</ul>
 </main>
 {% endblock %}
