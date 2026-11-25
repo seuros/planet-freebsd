@@ -20,6 +20,9 @@ what it needs between runs in `--state` (`state.json`).
 
 ## Adding a feed
 
+To suggest a feed without editing the configuration, see
+[Suggest a feed](CONTRIBUTING.md#suggest-a-feed).
+
 Append a block to `planet.toml` and send it for review. The site lists sources
 tagged `org` first, then all other sources, alphabetically by name within each
 group. No manual sorting is needed.
