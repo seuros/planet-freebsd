@@ -1,15 +1,18 @@
 {% extends "base.html" %}
+{% block title %}{% if let Some(tag) = topic %}+{{ tag }} · {% endif %}{{ site.title }}{% endblock %}
 {% block content %}
 <div class="layout">
 <main>
+{% if let Some(tag) = topic %}<h2>+{{ tag }}</h2><p><a href="atom.xml">Subscribe to +{{ tag }} via Atom</a></p>{% endif %}
 {% if days.is_empty() %}<p>No posts yet.</p>{% endif %}
 {% for day in days %}
 <h2 class="day">{{ day.date }}</h2>
 {% for p in day.posts %}
 <article>
-<h3><a href="{{ p.post.link }}" rel="noopener">{{ p.post.title_html|safe }}</a></h3>
-<p class="meta">{% if let Some(author) = p.post.author %}{{ author }} · {% endif %}<a href="{{ p.source.home() }}" rel="noopener">{{ p.source.name }}</a> · {{ p.time }}</p>
+<h3><a href="{{ p.post.link }}" rel="noopener" data-tag="{{ p.topics|join(" ") }}">{{ p.post.title_html|safe }}</a></h3>
+<p class="meta">{% if let Some(author) = p.post.display_author() %}{{ author }} · {% endif %}<a href="{{ p.source.home() }}" rel="noopener">{{ p.source.name }}</a> {% for tag in p.source.tags %}{% if crate::render::distro(tag).is_none() %}{% include "tag.html" %}{% endif %}{% endfor %} · {{ p.time }} {% for tag in p.topics %}{% include "topic.html" %}{% endfor %}</p>
 {% if !p.post.excerpt_html.is_empty() %}<p class="excerpt">{{ p.post.excerpt_html|safe }}</p>{% endif %}
+{% if let Some(date) = p.revised %}<p class="meta">Updated {{ date }}</p>{% endif %}
 </article>
 {% endfor %}
 {% endfor %}
@@ -18,7 +21,7 @@
 <h2>Subscriptions</h2>
 <ul>
 {% for feed in feeds %}
-<li><a href="{{ feed.home() }}" rel="noopener">{{ feed.name }}</a></li>
+<li><a href="{{ feed.home() }}" rel="noopener">{{ feed.name }}</a> {% for label in feed.tags %}{% if let Some(tag) = crate::render::distro(label) %}{% include "topic.html" %}{% else %}{% let tag = label %}{% include "tag.html" %}{% endif %}{% endfor %}</li>
 {% endfor %}
 </ul>
 </aside>

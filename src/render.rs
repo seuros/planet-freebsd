@@ -6,7 +6,8 @@ use anyhow::Context;
 use askama::Template;
 use jiff::{SignedDuration, Timestamp};
 use rama::http::protocols::rss::{
-    AtomEntry, AtomFeed, AtomGenerator, AtomLink, AtomPerson, AtomText, AtomTextKind,
+    AtomCategory, AtomEntry, AtomFeed, AtomGenerator, AtomLink, AtomPerson, AtomSource, AtomText,
+    AtomTextKind,
 };
 use rama::net::uri::Uri;
 
@@ -18,6 +19,21 @@ use crate::state::{FeedState, Post, State, write_atomic};
 pub struct Entry<'a> {
     pub post: &'a Post,
     pub source: &'a FeedSource,
+}
+
+const DISTROS: &[&str] =
+    &["dragonflybsd", "freebsd", "ghostbsd", "hardenedbsd", "midnightbsd", "netbsd", "openbsd"];
+
+fn distro(tag: &str) -> Option<&'static str> {
+    let tag = tag.trim();
+    if tag.eq_ignore_ascii_case("dragonfly-bsd") {
+        return Some("dragonflybsd");
+    }
+    DISTROS.iter().copied().find(|name| name.eq_ignore_ascii_case(tag))
+}
+
+fn topics<'a>(source: &'a FeedSource, post: &'a Post) -> impl Iterator<Item = &'static str> + 'a {
+    source.tags.iter().chain(&post.categories).filter_map(|tag| distro(tag))
 }
 
 impl Site {
@@ -33,9 +49,23 @@ impl FeedSource {
     }
 }
 
+impl Post {
+    fn display_author(&self) -> Option<&str> {
+        self.author.as_deref().map(str::trim).filter(|author| {
+            let name = author.split_once('<').map_or(*author, |(name, _)| name.trim_end());
+            !author.is_empty() && !name.eq_ignore_ascii_case("undefined")
+        })
+    }
+}
+
 /// The posts that make the page, newest first: per feed the newest few inside
 /// the age window, muted feeds left out, capped overall.
-pub fn select<'a>(config: &'a Config, state: &'a State, now: Timestamp) -> Vec<Entry<'a>> {
+fn select<'a>(
+    config: &'a Config,
+    state: &'a State,
+    now: Timestamp,
+    topic: Option<&str>,
+) -> Vec<Entry<'a>> {
     let site = &config.site;
     let window = SignedDuration::from_hours(i64::from(site.max_age_days) * 24);
     let cutoff = now.checked_sub(window).unwrap_or(Timestamp::MIN);
@@ -45,8 +75,21 @@ pub fn select<'a>(config: &'a Config, state: &'a State, now: Timestamp) -> Vec<E
         let Some(feed) = state.feed(source).filter(|feed| !site.mutes(feed)) else {
             continue;
         };
-        let mut posts: Vec<&Post> =
-            feed.posts.iter().filter(|post| post.published >= cutoff).collect();
+        let mut posts: Vec<&Post> = feed
+            .posts
+            .iter()
+            .filter(|post| post.published >= cutoff)
+            .filter(|post| topic.is_none_or(|tag| topics(source, post).any(|t| t == tag)))
+            .filter(|post| {
+                source.require_categories.is_empty()
+                    || post.categories.iter().any(|category| {
+                        source
+                            .require_categories
+                            .iter()
+                            .any(|tag| category.trim().eq_ignore_ascii_case(tag.trim()))
+                    })
+            })
+            .collect();
         posts.sort_by_key(|post| std::cmp::Reverse(post.published));
         entries.extend(
             posts.into_iter().take(site.max_posts_per_feed).map(|post| Entry { post, source }),
@@ -58,6 +101,8 @@ pub fn select<'a>(config: &'a Config, state: &'a State, now: Timestamp) -> Vec<E
 }
 
 struct PostView<'a> {
+    revised: Option<String>,
+    topics: std::collections::BTreeSet<&'static str>,
     post: &'a Post,
     source: &'a FeedSource,
     time: String,
@@ -71,6 +116,8 @@ struct Day<'a> {
 #[derive(Template)]
 #[template(path = "index.html")]
 struct IndexPage<'a> {
+    root: &'static str,
+    topic: Option<&'a str>,
     site: &'a Site,
     generated: String,
     days: Vec<Day<'a>>,
@@ -87,8 +134,18 @@ struct FeedRow<'a> {
 }
 
 #[derive(Template)]
+#[template(path = "subscribe.html")]
+struct SubscribePage<'a> {
+    root: &'static str,
+    site: &'a Site,
+    home: &'a str,
+    generated: &'a str,
+}
+
+#[derive(Template)]
 #[template(path = "status.html")]
 struct StatusPage<'a> {
+    root: &'static str,
     site: &'a Site,
     generated: String,
     rows: Vec<FeedRow<'a>>,
@@ -110,6 +167,8 @@ fn days<'a>(entries: &[Entry<'a>]) -> Vec<Day<'a>> {
     for entry in entries {
         let date = entry.post.published.strftime("%Y-%m-%d").to_string();
         let view = PostView {
+            revised: entry.post.revised.map(minute),
+            topics: topics(entry.source, entry.post).collect(),
             post: entry.post,
             source: entry.source,
             time: entry.post.published.strftime("%H:%M UTC").to_string(),
@@ -152,36 +211,74 @@ fn html(value: &str) -> AtomText {
     AtomText { value: value.to_string(), kind: AtomTextKind::Html }
 }
 
-fn atom_entry(entry: &Entry<'_>) -> Option<AtomEntry> {
+fn atom_entry(entry: &Entry<'_>, distro_scheme: &str, source_scheme: &str) -> Option<AtomEntry> {
     let post = entry.post;
     let link = Uri::parse(post.link.as_str()).ok()?;
     // RSS guids are free text; Atom ids must be IRIs. The link is one.
     let id = Uri::parse(post.id.as_str()).unwrap_or_else(|_| link.clone());
     let feed_name = &entry.source.name;
-    let byline = post
-        .author
-        .as_ref()
-        .map_or_else(|| feed_name.clone(), |author| format!("{author} ({feed_name})"));
-    Some(
-        AtomEntry::new(id, html(&post.title_html), post.published)
-            .with_author(AtomPerson::new(byline))
+    let mut item =
+        AtomEntry::new(id, html(&post.title_html), post.revised.unwrap_or(post.published))
+            .with_author(AtomPerson::new(post.display_author().unwrap_or(feed_name)))
             .with_link(AtomLink::alternate(link))
             .with_summary(html(&post.excerpt_html))
-            .with_published(post.published),
-    )
+            .with_published(post.published);
+    item.source = Some(AtomSource {
+        id: Uri::parse(entry.source.url.as_str()).ok(),
+        title: Some(AtomText::text(feed_name.as_str())),
+        updated: None,
+    });
+    let source_tags = entry
+        .source
+        .tags
+        .iter()
+        .map(|tag| tag.trim())
+        .filter(|tag| !tag.is_empty() && distro(tag).is_none());
+    let labels: std::collections::BTreeSet<_> = topics(entry.source, post)
+        .map(|tag| (distro_scheme, tag))
+        .chain(source_tags.map(|tag| (source_scheme, tag)))
+        .collect();
+    item.categories = labels
+        .into_iter()
+        .map(|(scheme, term)| AtomCategory {
+            term: term.into(),
+            scheme: Some(scheme.into()),
+            label: None,
+        })
+        .collect();
+    Some(item)
 }
 
-async fn atom(site: &Site, entries: &[Entry<'_>], now: Timestamp) -> anyhow::Result<Vec<u8>> {
+async fn atom(
+    site: &Site,
+    entries: &[Entry<'_>],
+    now: Timestamp,
+    topic: Option<&str>,
+) -> anyhow::Result<Vec<u8>> {
     let home = site.url.trim_end_matches('/');
+    let distro_scheme = format!("{home}/taxonomy/distro");
+    let source_scheme = format!("{home}/taxonomy/source-type");
+    let (home, title) = topic.map_or_else(
+        || (home.to_owned(), site.title.clone()),
+        |tag| (format!("{home}/tags/{tag}"), format!("{} · +{tag}", site.title)),
+    );
     let root = Uri::parse(format!("{home}/"))?;
     let feed = AtomFeed::builder()
         .id(root.clone())
-        .title(AtomText::text(site.title.as_str()))
-        .updated(entries.first().map_or(now, |entry| entry.post.published))
+        .title(AtomText::text(title))
+        .updated(
+            entries
+                .iter()
+                .map(|entry| entry.post.revised.unwrap_or(entry.post.published))
+                .max()
+                .unwrap_or(now),
+        )
         .with_link(AtomLink::self_link(Uri::parse(format!("{home}/atom.xml"))?))
         .with_link(AtomLink::alternate(root))
         .with_generator(AtomGenerator::new("planet-freebsd"))
-        .with_entries(entries.iter().filter_map(atom_entry))
+        .with_entries(
+            entries.iter().filter_map(|entry| atom_entry(entry, &distro_scheme, &source_scheme)),
+        )
         .build();
     feed.to_xml().await.map_err(anyhow::Error::from_boxed)
 }
@@ -205,24 +302,53 @@ pub async fn render(
     now: Timestamp,
 ) -> anyhow::Result<usize> {
     let site = &config.site;
-    let entries = select(config, state, now);
     let generated = minute(now);
-
-    let index = IndexPage {
-        site,
-        generated: generated.clone(),
-        days: days(&entries),
-        feeds: &config.feeds,
-    };
-    let status = StatusPage { site, generated, rows: rows(config, state) };
+    write_atomic(&out.join("atom.css"), include_bytes!("../templates/atom.css"))?;
+    let mut count = 0;
+    for topic in std::iter::once(None).chain(DISTROS.iter().copied().map(Some)) {
+        let entries = select(config, state, now, topic);
+        let dir = topic.map_or_else(|| out.to_owned(), |tag| out.join("tags").join(tag));
+        let root = if topic.is_some() { "../../" } else { "" };
+        if topic.is_none() {
+            count = entries.len();
+        }
+        let index = IndexPage {
+            root,
+            topic,
+            site,
+            generated: generated.clone(),
+            days: days(&entries),
+            feeds: &config.feeds,
+        };
+        write_page(&dir, "index.html", &index)?;
+        let mut feed = atom(site, &entries, now, topic).await.context("rendering atom.xml")?;
+        // A stylesheet instruction belongs after the XML declaration, before the root.
+        let start = if feed.starts_with(b"<?xml ") {
+            feed.windows(2).position(|pair| pair == b"?>").context("incomplete XML declaration")?
+                + 2
+        } else {
+            0
+        };
+        let style = format!("\n<?xml-stylesheet type=\"text/css\" href=\"{root}atom.css\"?>\n");
+        feed.splice(start..start, style.bytes());
+        write_atomic(&dir.join("atom.xml"), &feed)?;
+    }
+    write_page(
+        out,
+        "subscribe.html",
+        &SubscribePage {
+            root: "",
+            site,
+            home: site.url.trim_end_matches('/'),
+            generated: &generated,
+        },
+    )?;
+    let status = StatusPage { root: "", site, generated, rows: rows(config, state) };
     let opml = Opml { site, feeds: &config.feeds };
 
-    write_page(out, "index.html", &index)?;
     write_page(out, "status.html", &status)?;
     write_page(out, "opml.xml", &opml)?;
-    let feed = atom(site, &entries, now).await.context("rendering atom.xml")?;
-    write_atomic(&out.join("atom.xml"), &feed)?;
-    Ok(entries.len())
+    Ok(count)
 }
 
 #[cfg(test)]

@@ -17,6 +17,7 @@ url = "https://busy.example/feed"
 
 [[feed]]
 name = "Quiet & Co"
+tags = ["dragonflybsd", "personal"]
 url = "https://quiet.example/feed"
 site = "https://quiet.example"
 "#,
@@ -34,6 +35,7 @@ fn post(id: &str, published: &str) -> Post {
         title_html: format!("Title {id} &amp; more"),
         link: format!("https://posts.example/{id}"),
         author: None,
+        revised: None,
         published: at(published),
         first_seen: at(published),
         excerpt_html: "An excerpt".to_string(),
@@ -68,7 +70,7 @@ fn now() -> Timestamp {
 }
 
 fn selected(config: &Config, state: &State) -> Vec<String> {
-    select(config, state, now())
+    select(config, state, now(), None)
         .iter()
         .map(|entry| entry.post.link.rsplit('/').next().unwrap().to_string())
         .collect()
@@ -77,6 +79,17 @@ fn selected(config: &Config, state: &State) -> Vec<String> {
 #[test]
 fn select_caps_per_feed_drops_old_posts_and_sorts_newest_first() {
     assert_eq!(selected(&config(), &state()), ["b1", "q1", "b2"]);
+}
+
+#[test]
+fn required_categories_match_post_tags_before_the_feed_cap() {
+    let (mut config, mut state) = (config(), state());
+    config.feeds[0].require_categories = vec!["bsd".into()];
+    let posts = &mut feed_mut(&mut state, "busy").posts;
+    posts[0].title_html = "BSD".into();
+    posts[1].categories = vec!["not-bsd".into()];
+    posts[2].categories = vec!["BSD".into()];
+    assert_eq!(selected(&config, &state), ["q1", "b3"]);
 }
 
 #[test]
@@ -92,6 +105,7 @@ fn select_skips_muted_feeds_but_keeps_failing_ones() {
 async fn render_writes_every_file_escaped() {
     let (config, mut state) = (config(), state());
     feed_mut(&mut state, "quiet").failures = 1;
+    feed_mut(&mut state, "quiet").posts[0].author = Some("undefined <blog@example.org>".into());
     feed_mut(&mut state, "quiet").last_error = Some("HTTP 503".to_string());
     let out = tempfile::tempdir().unwrap();
 
@@ -109,6 +123,10 @@ async fn render_writes_every_file_escaped() {
     );
     assert!(index.contains(r#"href="https://posts.example/q1""#));
     assert!(!index.contains("ancient"));
+    assert_eq!(index.matches("data-tag=\"personal\">+personal</span>").count(), 2);
+    let scoped = read("tags/dragonflybsd/atom.xml");
+    assert!(scoped.contains("/tags/dragonflybsd/atom.xml") && scoped.contains("posts.example/q1"));
+    assert!(!scoped.contains("posts.example/b1"));
 
     let status = read("status.html");
     assert!(status.contains("failing") && status.contains("HTTP 503"));
@@ -120,6 +138,10 @@ async fn render_writes_every_file_escaped() {
     );
 
     let atom = read("atom.xml");
+    let subscribe = read("subscribe.html");
+    assert!(subscribe.contains("https://planet.example/tags/openbsd/atom.xml"));
+    assert!(read("tags/openbsd/index.html").contains("href=\"../../subscribe.html\""));
+    assert!(!index.contains("undefined") && !atom.contains("undefined"));
     assert!(atom.contains("<id>https://posts.example/b1</id>"), "{atom}");
     assert!(
         atom.contains(r#"<title type="html"><![CDATA[Title b1 &amp; more]]></title>"#),

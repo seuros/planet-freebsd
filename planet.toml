@@ -4,7 +4,7 @@
 [site]
 title = "Planet FreeBSD"
 url = "https://planet.freebsd.org"
-description = "What the FreeBSD community is writing"
+description = "News and writing from across the BSDs"
 # max_posts = 60            # posts on the page and in the combined feed
 # max_posts_per_feed = 5    # so one busy feed cannot fill the page
 # max_age_days = 365        # older posts are left out
@@ -13,15 +13,73 @@ description = "What the FreeBSD community is writing"
 
 [[feed]]
 name = "FreeBSD Foundation"
+tags = ["freebsd", "org"]
 url = "https://freebsdfoundation.org/feed/"
 site = "https://freebsdfoundation.org"
 
 [[feed]]
 name = "FreeBSD News Flash"
+tags = ["freebsd", "org"]
 url = "https://www.freebsd.org/news/feed.xml"
 site = "https://www.freebsd.org/news/newsflash/"
 
 [[feed]]
 name = "FreeBSD Security Advisories"
+tags = ["freebsd", "org"]
 url = "https://www.freebsd.org/security/feed.xml"
 site = "https://www.freebsd.org/security/"
+
+[[feed]]
+name = "OpenBSD Journal"
+tags = ["openbsd"]
+url = "https://undeadly.org/cgi?action=rss"
+site = "https://undeadly.org/"
+
+[[feed]]
+name = "Seuros Blog"
+require_categories = ["bsd", "freebsd", "openbsd", "netbsd", "dragonflybsd", "dragonfly-bsd", "midnightbsd", "chaosbsd", "hardenedbsd", "ghostbsd"]
+tags = ["personal"]
+url = "https://www.seuros.com/rss.xml"
+site = "https://www.seuros.com/blog/"
+
+[[feed]]
+name = "DragonFly BSD Digest"
+tags = ["dragonflybsd"]
+url = "https://www.dragonflydigest.com/feed/"
+site = "https://www.dragonflydigest.com/"
+
+[[feed]]
+name = "vermaden"
+tags = ["freebsd", "personal"]
+url = "https://vermaden.wordpress.com/tag/freebsd/feed/"
+site = "https://vermaden.wordpress.com/"
+
+[[feed]]
+name = "Tumfatig"
+tags = ["openbsd", "personal"]
+url = "https://www.tumfatig.net/tags/openbsd/index.xml"
+site = "https://www.tumfatig.net/"
+
+[[feed]]
+name = "HardenedBSD"
+tags = ["hardenedbsd", "org"]
+url = "https://hardenedbsd.org/rss.xml"
+site = "https://hardenedbsd.org/"
+
+[[feed]]
+name = "NetBSD News"
+tags = ["netbsd", "org"]
+url = "https://www.NetBSD.org/changes/rss-netbsd.xml"
+site = "https://www.NetBSD.org/changes/"
+
+[[feed]]
+name = "GhostBSD"
+tags = ["ghostbsd", "org"]
+url = "https://ghostbsd.org/rss.xml"
+site = "https://ghostbsd.org/"
+
+[[feed]]
+name = "MidnightBSD Developer Blog"
+tags = ["midnightbsd", "org"]
+url = "https://www.justjournal.com/users/mbsd/rss"
+site = "https://www.justjournal.com/users/mbsd/"

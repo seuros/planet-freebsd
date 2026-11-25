@@ -44,6 +44,12 @@ pub struct FeedSource {
     pub url: String,
     /// The human-facing site; the feed URL stands in when absent.
     pub site: Option<String>,
+    /// Curated source labels, independent of the post filter.
+    #[serde(default)]
+    pub tags: Vec<String>,
+    /// Show only posts carrying one of these publisher categories (exact, case-insensitive).
+    #[serde(default)]
+    pub require_categories: Vec<String>,
     /// Keep only posts mentioning one of these words (title, categories or
     /// excerpt, case-insensitive). Empty keeps everything.
     #[serde(default)]

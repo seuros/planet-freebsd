@@ -40,6 +40,8 @@ pub struct Post {
     /// The publisher's date, or `first_seen` when it is missing or in the
     /// future.
     pub published: Timestamp,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub revised: Option<Timestamp>,
     pub first_seen: Timestamp,
     /// HTML-safe text, see [`crate::text`].
     pub excerpt_html: String,

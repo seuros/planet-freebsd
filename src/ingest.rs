@@ -70,12 +70,17 @@ fn post_from(item: &FeedItem, site: &Site, previous: &[Post], now: Timestamp) ->
         (title_html, excerpt)
     };
 
-    let first_seen = previous.iter().find(|post| post.id == id).map_or(now, |post| post.first_seen);
-    let published = item
-        .published()
-        .or_else(|| item.updated())
-        .filter(|date| *date <= now)
-        .unwrap_or(first_seen);
+    let prior = previous.iter().find(|post| post.id == id);
+    let first_seen = prior.map_or(now, |post| post.first_seen);
+    let reported = item.published().or_else(|| item.updated()).filter(|date| *date <= now);
+    let published = prior.map(|post| post.published).or(reported).unwrap_or(first_seen);
+    // RSS has no item-level updated field, but publishers may advance pubDate
+    // on an existing GUID. Never use the poll time as evidence of a correction.
+    let revised = item
+        .updated()
+        .or(reported)
+        .filter(|date| *date > published && *date <= now)
+        .max(prior.and_then(|post| post.revised));
 
     Some(Post {
         id,
@@ -88,6 +93,7 @@ fn post_from(item: &FeedItem, site: &Site, previous: &[Post], now: Timestamp) ->
             .filter(|name| !name.is_empty())
             .map(str::to_string),
         published,
+        revised,
         first_seen,
         excerpt_html: text::truncate(&excerpt, site.excerpt_chars),
         categories: item.categories().map(str::to_string).collect(),

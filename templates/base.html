@@ -22,9 +22,20 @@ header p { margin: .2rem 0 0; color: var(--muted); }
 h2.day { margin: 2rem 0 .5rem; font-size: .85rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 article { padding: .9rem 0; border-top: 1px solid var(--rule); }
 article h3 { margin: 0; font-size: 1.15rem; }
-article h3 a { text-decoration: none; }
+article h3 a { color: var(--distro, var(--fg)); text-decoration: none; }
+@media (prefers-color-scheme: dark) {
+  article h3 a { color: color-mix(in srgb, var(--distro, var(--fg)) 45%, white); }
+}
 article h3 a:hover { text-decoration: underline; }
 .meta { margin: .15rem 0 .4rem; font-size: .85rem; color: var(--muted); }
+.tag { display: inline-block; margin-inline-end: .2rem; padding: 0 .45em; border-radius: .4em; font-size: .8rem; color: white; background: var(--distro, #515763); }
+[data-tag~="freebsd"] { --distro: #963632; }
+[data-tag~="openbsd"] { --distro: #795600; }
+[data-tag~="dragonflybsd"] { --distro: #285d88; }
+[data-tag~="hardenedbsd"] { --distro: #315940; }
+[data-tag~="netbsd"] { --distro: #99430f; }
+[data-tag~="ghostbsd"] { --distro: #17676b; }
+[data-tag~="midnightbsd"] { --distro: #593d80; }
 article p.excerpt { margin: 0; overflow-wrap: anywhere; }
 aside h2 { margin: 2rem 0 .5rem; font-size: 1rem; }
 aside ul { margin: 0; padding: 0; list-style: none; font-size: .9rem; }
@@ -37,13 +48,15 @@ footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--rule);
 </head>
 <body>
 <header>
-<h1><a href="./">{{ site.title }}</a></h1>
+<h1><a href="{{ root }}index.html">{{ site.title }}</a></h1>
 {% if !site.description.is_empty() %}<p>{{ site.description }}</p>{% endif %}
+<nav aria-label="Browse by BSD">{% for tag in crate::render::DISTROS %}{% include "topic.html" %} {% endfor %}</nav>
+<a href="{{ root }}subscribe.html">Subscribe</a>
 </header>
 {% block content %}{% endblock %}
 <footer>
 Generated {{ generated }}.
-<a href="atom.xml">Atom feed</a> · <a href="opml.xml">OPML</a> · <a href="status.html">Feed status</a>.
+<a href="atom.xml">Atom feed</a> · <a href="{{ root }}opml.xml">OPML</a> · <a href="{{ root }}status.html">Feed status</a>.
 Posts belong to their authors; follow the links to read them in full.
 </footer>
 </body>

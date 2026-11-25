@@ -84,6 +84,7 @@ async fn future_date_falls_back_to_first_seen() {
 
     let mut remembered = future.clone();
     remembered.first_seen = "2026-11-10T00:00:00Z".parse().unwrap();
+    remembered.published = remembered.first_seen;
     let second = posts(RSS, "", &[remembered.clone()]).await;
     let future = by_id(&second, "future-1");
     assert_eq!(
@@ -100,6 +101,20 @@ async fn atom_entries_become_posts() {
     assert_eq!(posts[0].author.as_deref(), Some("Beastie"));
     assert_eq!(posts[0].excerpt_html, "vnet and friends");
     assert_eq!(posts[0].link, "https://atom.example/jails");
+}
+
+#[tokio::test]
+async fn later_publisher_dates_revise_the_same_entry() {
+    for (doc, old, new) in [
+        (ATOM, "2026-11-01T08:00:00Z", "2026-11-02T08:00:00Z"),
+        (RSS, "Mon, 02 Nov 2026", "Tue, 03 Nov 2026"),
+    ] {
+        let first = posts(doc, "", &[]).await;
+        let next = posts(&doc.replace(old, new), "", &first).await;
+        assert_eq!(ids(&first), ids(&next));
+        assert_eq!(first[0].published, next[0].published);
+        assert!(next[0].revised.is_some_and(|date| date > first[0].published));
+    }
 }
 
 #[tokio::test]

@@ -21,6 +21,7 @@ Add a block to `planet.toml` and send it for review:
 ```toml
 [[feed]]
 name = "Your Name"
+tags = ["freebsd", "personal"]    # optional, shown as colored labels; does not filter posts
 url = "https://example.org/tags/freebsd/feed.xml"
 site = "https://example.org"      # optional, where the name links to
 filter = ["freebsd", "zfs"]        # optional, for blogs that are not only about FreeBSD
@@ -29,6 +30,11 @@ filter = ["freebsd", "zfs"]        # optional, for blogs that are not only about
 Prefer a tag or category feed. Where the blog has none, `filter` keeps only posts
 mentioning one of the words in their title, categories or excerpt. RSS 2.0 and
 Atom 1.0 are read; RSS 1.0 (RDF) is not.
+
+For a mixed-topic blog, set `require_categories = ["bsd", "freebsd", "openbsd"]`
+on its feed to publish only posts carrying at least one of those RSS or Atom
+categories. Matching ignores ASCII case but requires the whole tag. A mention
+in the title or excerpt doesn't count. Changes apply on an offline rebuild.
 
 ## What it does with a feed
 
