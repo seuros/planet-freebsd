@@ -101,12 +101,18 @@ async fn atom_entries_become_posts() {
     assert_eq!(posts[0].author.as_deref(), Some("Beastie"));
     assert_eq!(posts[0].excerpt_html, "vnet and friends");
     assert_eq!(posts[0].link, "https://atom.example/jails");
+    assert!(!posts[0].publication_confirmed);
+    assert_eq!(posts[0].published, now());
 }
 
 #[tokio::test]
 async fn later_publisher_dates_revise_the_same_entry() {
     for (doc, old, new) in [
-        (ATOM, "2026-11-01T08:00:00Z", "2026-11-02T08:00:00Z"),
+        (
+            &*ATOM.replace("<author>", "<published>2026-10-31T00:00:00Z</published><author>"),
+            "2026-11-01T08:00:00Z",
+            "2026-11-02T08:00:00Z",
+        ),
         (RSS, "Mon, 02 Nov 2026", "Tue, 03 Nov 2026"),
     ] {
         let first = posts(doc, "", &[]).await;

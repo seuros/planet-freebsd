@@ -50,6 +50,14 @@ impl FeedSource {
 }
 
 impl Post {
+    const fn display_date(&self) -> Timestamp {
+        if self.publication_confirmed { self.published } else { self.first_seen }
+    }
+
+    fn rank(&self) -> std::cmp::Reverse<(bool, Timestamp)> {
+        std::cmp::Reverse((self.publication_confirmed, self.display_date()))
+    }
+
     fn display_author(&self) -> Option<&str> {
         self.author.as_deref().map(str::trim).filter(|author| {
             let name = author.split_once('<').map_or(*author, |(name, _)| name.trim_end());
@@ -78,7 +86,7 @@ fn select<'a>(
         let mut posts: Vec<&Post> = feed
             .posts
             .iter()
-            .filter(|post| post.published >= cutoff)
+            .filter(|post| post.display_date() >= cutoff)
             .filter(|post| topic.is_none_or(|tag| topics(source, post).any(|t| t == tag)))
             .filter(|post| {
                 source.require_categories.is_empty()
@@ -90,12 +98,12 @@ fn select<'a>(
                     })
             })
             .collect();
-        posts.sort_by_key(|post| std::cmp::Reverse(post.published));
+        posts.sort_by_key(|post| post.rank());
         entries.extend(
             posts.into_iter().take(site.max_posts_per_feed).map(|post| Entry { post, source }),
         );
     }
-    entries.sort_by_key(|entry| std::cmp::Reverse(entry.post.published));
+    entries.sort_by_key(|entry| entry.post.rank());
     entries.truncate(site.max_posts);
     entries
 }
@@ -165,13 +173,21 @@ fn minute(at: Timestamp) -> String {
 fn days<'a>(entries: &[Entry<'a>]) -> Vec<Day<'a>> {
     let mut days: Vec<Day<'a>> = Vec::new();
     for entry in entries {
-        let date = entry.post.published.strftime("%Y-%m-%d").to_string();
+        let date = if entry.post.publication_confirmed {
+            entry.post.published.strftime("%Y-%m-%d").to_string()
+        } else {
+            "Publication date unknown".to_owned()
+        };
         let view = PostView {
             revised: entry.post.revised.map(minute),
             topics: topics(entry.source, entry.post).collect(),
             post: entry.post,
             source: entry.source,
-            time: entry.post.published.strftime("%H:%M UTC").to_string(),
+            time: if entry.post.publication_confirmed {
+                entry.post.published.strftime("%H:%M UTC").to_string()
+            } else {
+                format!("First seen {}", minute(entry.post.first_seen))
+            },
         };
         match days.last_mut() {
             Some(day) if day.date == date => day.posts.push(view),
@@ -218,11 +234,13 @@ fn atom_entry(entry: &Entry<'_>, distro_scheme: &str, source_scheme: &str) -> Op
     let id = Uri::parse(post.id.as_str()).unwrap_or_else(|_| link.clone());
     let feed_name = &entry.source.name;
     let mut item =
-        AtomEntry::new(id, html(&post.title_html), post.revised.unwrap_or(post.published))
+        AtomEntry::new(id, html(&post.title_html), post.revised.unwrap_or(post.display_date()))
             .with_author(AtomPerson::new(post.display_author().unwrap_or(feed_name)))
             .with_link(AtomLink::alternate(link))
-            .with_summary(html(&post.excerpt_html))
-            .with_published(post.published);
+            .with_summary(html(&post.excerpt_html));
+    if post.publication_confirmed {
+        item = item.with_published(post.published);
+    }
     item.source = Some(AtomSource {
         id: Uri::parse(entry.source.url.as_str()).ok(),
         title: Some(AtomText::text(feed_name.as_str())),

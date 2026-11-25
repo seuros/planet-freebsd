@@ -37,6 +37,7 @@ fn post(id: &str, published: &str) -> Post {
         author: None,
         revised: None,
         published: at(published),
+        publication_confirmed: true,
         first_seen: at(published),
         excerpt_html: "An excerpt".to_string(),
         categories: Vec::new(),

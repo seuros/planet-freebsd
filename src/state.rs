@@ -40,6 +40,9 @@ pub struct Post {
     /// The publisher's date, or `first_seen` when it is missing or in the
     /// future.
     pub published: Timestamp,
+    /// Older caches did not distinguish publication from discovery.
+    #[serde(default)]
+    pub publication_confirmed: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub revised: Option<Timestamp>,
     pub first_seen: Timestamp,
