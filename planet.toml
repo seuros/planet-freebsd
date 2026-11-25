@@ -108,3 +108,10 @@ name = "NextBSD Releases"
 tags = ["nextbsd", "org"]
 url = "https://github.com/nextbsd/nextbsd/releases.atom"
 site = "https://github.com/nextbsd/nextbsd/releases"
+
+[[feed]]
+name = "cherry@NetBSD"
+tags = ["netbsd", "personal"]
+filter = ["#netbsd"]
+url = "https://bow.st/c.rss"
+site = "https://bow.st/c/"
