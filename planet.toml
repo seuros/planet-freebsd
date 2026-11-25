@@ -115,3 +115,10 @@ tags = ["netbsd", "personal"]
 filter = ["#netbsd"]
 url = "https://bow.st/c.rss"
 site = "https://bow.st/c/"
+
+[[feed]]
+name = "Minsoo Choo"
+tags = ["freebsd", "personal"]
+filter = ["freebsd"]
+url = "https://minsoo.io/feed"
+site = "https://minsoo.io/"
