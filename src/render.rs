@@ -330,6 +330,7 @@ pub async fn render(
     });
     let generated = minute(now);
     write_atomic(&out.join("atom.css"), include_bytes!("../templates/atom.css"))?;
+    write_atomic(&out.join("planet.svg"), include_bytes!("../templates/planet.svg"))?;
     let mut count = 0;
     for topic in std::iter::once(None).chain(DISTROS.iter().copied().map(Some)) {
         let entries = select(config, state, now, topic);
