@@ -128,3 +128,235 @@ name = "HyprBSD Blog"
 tags = ["hyprbsd", "org"]
 url = "https://hyprbsd.org/blog/index.xml"
 site = "https://hyprbsd.org/blog/"
+
+[[feed]]
+name = "Adventures in BSD"
+tags = ["openbsd", "personal"]
+url = "https://write.as/adventures-in-bsd/feed/"
+site = "https://write.as/adventures-in-bsd/"
+
+[[feed]]
+name = "Alfonso Siciliano"
+tags = ["freebsd", "personal"]
+url = "https://alfonsosiciliano.gitlab.io/atom.xml"
+site = "https://alfonsosiciliano.gitlab.io/"
+
+[[feed]]
+name = "Cambus.net"
+tags = ["personal"]
+filter = ["bsd"]
+url = "https://www.cambus.net/atom.xml"
+site = "https://www.cambus.net/"
+
+[[feed]]
+name = "BastilleBSD Blog"
+tags = ["freebsd", "org"]
+url = "https://bastillebsd.org/blog/index.xml"
+site = "https://bastillebsd.org/blog/"
+
+[[feed]]
+name = "Brian Robert Callahan"
+tags = ["personal"]
+filter = ["bsd"]
+url = "https://briancallahan.net/blog/feed.xml"
+site = "https://briancallahan.net/blog/"
+
+[[feed]]
+name = "FreeBSD Developer’s Notebook"
+tags = ["freebsd", "personal"]
+filter = ["freebsd"]
+url = "https://kernelnomicon.org/index.xml"
+site = "https://kernelnomicon.org/"
+
+[[feed]]
+name = "IT Notes"
+tags = ["personal"]
+require_categories = ["bsd", "freebsd", "netbsd", "openbsd", "dragonflybsd"]
+url = "https://it-notes.dragas.net/feed.xml"
+site = "https://it-notes.dragas.net/"
+
+[[feed]]
+name = "Klara Systems"
+tags = ["freebsd", "org"]
+require_categories = ["freebsd"]
+url = "https://klarasystems.com/feed/"
+site = "https://klarasystems.com/"
+
+[[feed]]
+name = "Michael W Lucas"
+tags = ["personal"]
+filter = ["freebsd", "openbsd", "netbsd", "dragonflybsd"]
+url = "https://mwl.io/archives/category/nonfiction/feed"
+site = "https://mwl.io/"
+
+[[feed]]
+name = "Nico’s Blog"
+tags = ["personal"]
+filter = ["bsd"]
+url = "https://www.ncartron.org/feed.rss"
+site = "https://www.ncartron.org/tag_BSD.html"
+
+[[feed]]
+name = "NomadBSD"
+tags = ["freebsd", "org"]
+url = "https://nomadbsd.org/rss.xml"
+site = "https://nomadbsd.org/"
+
+[[feed]]
+name = "OpenBSD Webzine"
+tags = ["openbsd", "org"]
+url = "https://webzine.puffy.cafe/atom.xml"
+site = "https://webzine.puffy.cafe/"
+
+[[feed]]
+name = "Paul’s Site of Stuff"
+tags = ["personal"]
+filter = ["bsd"]
+url = "https://paulwilde.uk/atom.xml"
+site = "https://paulwilde.uk/"
+
+[[feed]]
+name = "Playing with BSD"
+tags = ["freebsd", "personal"]
+url = "https://genneko.github.io/playing-with-bsd/index.xml"
+site = "https://genneko.github.io/playing-with-bsd/"
+
+[[feed]]
+name = "Random *NIX Fix"
+tags = ["freebsd", "personal"]
+filter = ["freebsd"]
+url = "https://randomnixfix.wordpress.com/feed/"
+site = "https://randomnixfix.wordpress.com/"
+
+[[feed]]
+name = "helloSystem Releases"
+tags = ["freebsd", "org"]
+url = "https://github.com/helloSystem/ISO/releases.atom"
+site = "https://github.com/helloSystem/ISO/releases"
+
+[[feed]]
+name = "Rubenerd"
+tags = ["personal"]
+filter = ["bsd"]
+url = "https://www.rubenerd.au/feed/"
+site = "https://www.rubenerd.au/"
+
+[[feed]]
+name = "Warner’s Random Hacking Blog"
+tags = ["personal"]
+require_categories = ["bsd", "freebsd", "netbsd", "openbsd", "2bsd", "2.11bsd", "4bsd"]
+url = "https://bsdimp.blogspot.com/feeds/posts/default"
+site = "https://bsdimp.blogspot.com/"
+
+[[feed]]
+name = "[bobulate]"
+tags = ["freebsd", "personal"]
+require_categories = ["freebsd"]
+url = "https://euroquis.nl/feed.xml"
+site = "https://euroquis.nl/"
+
+[[feed]]
+name = "benzblog"
+tags = ["netbsd", "personal"]
+url = "https://bentsukun.ch/categories/netbsd/index.xml"
+site = "https://bentsukun.ch/"
+
+[[feed]]
+name = "Cute Pieces of OpenBSD Evangelism"
+tags = ["openbsd", "personal"]
+filter = ["openbsd"]
+url = "https://chown.me/blog/feeds/atom.xml"
+site = "https://chown.me/blog/"
+
+[[feed]]
+name = "MirBSD Developers’ Weblog"
+tags = ["mirbsd", "org"]
+filter = ["mirbsd", "mirbf", "mirports"]
+url = "https://mbsd.evolvis.org/wlog-10.rss"
+site = "https://mbsd.evolvis.org/wlog.htm"
+
+[[feed]]
+name = "Netgate Blog"
+tags = ["freebsd", "org"]
+require_categories = ["freebsd", "pfsense"]
+url = "https://www.netgate.com/blog/rss.xml"
+site = "https://www.netgate.com/blog"
+
+[[feed]]
+name = "Solène’s Percent"
+tags = ["personal"]
+filter = ["bsd"]
+url = "https://dataswamp.org/~solene/rss.xml"
+site = "https://dataswamp.org/~solene/"
+
+[[feed]]
+name = "oshogbo web"
+tags = ["freebsd", "personal"]
+filter = ["freebsd", "poudriere"]
+url = "https://feeds.feedburner.com/oshogbo"
+site = "https://oshogbo.com/"
+
+[[feed]]
+name = "Daemonic Dispatches"
+tags = ["freebsd", "personal"]
+filter = ["freebsd"]
+url = "https://www.daemonology.net/blog/index.rss"
+site = "https://www.daemonology.net/blog/"
+
+[[feed]]
+name = "Dan Langille’s Other Diary"
+tags = ["freebsd", "personal"]
+url = "https://dan.langille.org/category/freebsd/feed/"
+site = "https://dan.langille.org/"
+
+[[feed]]
+name = "GeekLAN"
+tags = ["netbsd", "personal"]
+url = "https://www.geeklan.co.uk/?feed=rss2&category_name=netbsd"
+site = "https://www.geeklan.co.uk/"
+
+[[feed]]
+name = "OPNsense Releases"
+tags = ["freebsd", "org"]
+url = "https://github.com/opnsense/core/releases.atom"
+site = "https://github.com/opnsense/core/releases"
+
+[[feed]]
+name = "That Grumpy BSD Guy"
+tags = ["personal"]
+require_categories = ["bsd", "openbsd", "freebsd", "netbsd", "dragonfly bsd"]
+url = "https://bsdly.blogspot.com/feeds/posts/default"
+site = "https://bsdly.blogspot.com/"
+
+[[feed]]
+name = "Julio Merino"
+tags = ["personal"]
+filter = ["bsd"]
+url = "https://jmmv.dev/feed.xml"
+site = "https://jmmv.dev/"
+
+[[feed]]
+name = "eerielinux"
+tags = ["freebsd", "personal"]
+url = "https://eerielinux.wordpress.com/tag/freebsd/feed/"
+site = "https://eerielinux.wordpress.com/"
+
+[[feed]]
+name = "hubertf’s NetBSD Blog"
+tags = ["netbsd", "personal"]
+url = "https://www.feyrer.de/NetBSD/bx/blosxom.cgi/index.rss"
+site = "https://www.feyrer.de/NetBSD/blog.html"
+
+[[feed]]
+name = "TrueNAS"
+tags = ["freebsd", "org"]
+require_categories = ["freebsd"]
+url = "https://www.truenas.com/feed/"
+site = "https://www.truenas.com/blog/"
+
+[[feed]]
+name = "Joshua Stein"
+tags = ["openbsd", "personal"]
+require_categories = ["openbsd"]
+url = "https://jcs.org/rss"
+site = "https://jcs.org/"
